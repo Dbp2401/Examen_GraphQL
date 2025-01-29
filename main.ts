@@ -1,4 +1,3 @@
-//Alejandro Lana
 import {ApolloServer} from "@apollo/server"
 import {startStandaloneServer} from "@apollo/server/standalone";
 import { resolvers } from "./resolvers.ts";
@@ -20,6 +19,7 @@ if (!ninjaApiKey) {
 
 const client = new MongoClient (MONGO_URL)
 await client.connect()
+console.log('Conectado a la base de datos');
 const dataBase = client.db('DBName')
 
 //export const xCollection = dataBase.collection<>('nameOfCollection')

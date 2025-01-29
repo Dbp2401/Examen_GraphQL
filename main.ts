@@ -1,50 +1,37 @@
-/*import { ApolloServer } from "@apollo/server";
+import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { MongoClient } from "mongodb";
-import { schema } from "./schema.ts"; // Tu esquema GraphQL
-import { resolvers } from "./resolvers.ts"; // Tus resolutores
 
-// Obtiene la URL de MongoDB desde las variables de entorno
+// Conectar a MongoDB usando variable de entorno
 const MONGO_URL = Deno.env.get("MONGO_URL");
-
 if (!MONGO_URL) {
   throw new Error("Please provide a valid MONGO_URL environment variable");
 }
 
-// Inicializa el cliente MongoDB
 const mongoClient = new MongoClient(MONGO_URL);
 await mongoClient.connect();
-console.info("Connected to MongoDB");
+console.info("✅ Connected to MongoDB");
 
-// Obtiene la colección de contactos
-const mongoDB = mongoClient.db("contacts_db"); 
-const ContactCollection = mongoDB.collection("contacts"); 
+// Definir esquema GraphQL
+const typeDefs = `#graphql
+  type Query {
+    hello: String
+  }
+`;
 
-// Inicializa el servidor Apollo
-const server = new ApolloServer({
-  typeDefs: schema, 
-  resolvers, 
-});
+// Definir resolvers
+const resolvers = {
+  Query: {
+    hello: () => "¡Hola desde Deno Deploy con MongoDB!",
+  },
+};
 
-// Configura y arranca el servidor
+// Inicializar servidor Apollo
+const server = new ApolloServer({ typeDefs, resolvers });
+
+// Iniciar servidor en el puerto 8000
 const { url } = await startStandaloneServer(server, {
-  context: async () => ({
-    ContactCollection, 
-  }),
+  listen: { port: 8000 },
 });
 
-console.info(`Server ready at ${url}`);
-*/
-
-
-//////CODIGO MINIMO PARA HACER EL DEPLOY
-// Importa la función para manejar las respuestas HTTP
-import { serve } from "https://deno.land/std/http/server.ts";
-
-// Define el puerto en el que escuchará el servidor
-const port = 8000;
-
-// Configura el servidor para responder con un mensaje "Hello World"
-serve((req) => new Response("Hello World!", { status: 200 }));
-
-console.log(`Server running on http://localhost:${port}`);
+console.log(`🚀 Server ready at ${url}`);

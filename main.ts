@@ -1,37 +1,39 @@
-import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
-import { MongoClient } from "mongodb";
+//Alejandro Lana
+import {ApolloServer} from "@apollo/server"
+import {startStandaloneServer} from "@apollo/server/standalone";
+import { resolvers } from "./resolvers.ts";
+import {Collection, MongoClient, ObjectId} from "mongodb"
+import { schema } from "./schema.ts";
 
-// Conectar a MongoDB usando variable de entorno
 const MONGO_URL = Deno.env.get("MONGO_URL");
+
 if (!MONGO_URL) {
-  throw new Error("Please provide a valid MONGO_URL environment variable");
+  throw new Error("La variable de entorno 'mongoURL' no está configurada");
 }
 
-const mongoClient = new MongoClient(MONGO_URL);
-await mongoClient.connect();
-console.info("✅ Connected to MongoDB");
+const ninjaApiKey = Deno.env.get("apiNinjaKey");
 
-// Definir esquema GraphQL
-const typeDefs = `#graphql
-  type Query {
-    hello: String
-  }
-`;
+if (!ninjaApiKey) {
+  throw new Error("La variable de entorno 'apiNinjaKey' no está configurada");
+}
 
-// Definir resolvers
-const resolvers = {
-  Query: {
-    hello: () => "¡Hola desde Deno Deploy con MongoDB!",
-  },
-};
 
-// Inicializar servidor Apollo
-const server = new ApolloServer({ typeDefs, resolvers });
+const client = new MongoClient (MONGO_URL)
+await client.connect()
+const dataBase = client.db('DBName')
 
-// Iniciar servidor en el puerto 8000
-const { url } = await startStandaloneServer(server, {
-  listen: { port: 8000 },
+//export const xCollection = dataBase.collection<>('nameOfCollection')
+
+
+const server = new ApolloServer({
+  typeDefs : schema,
+  resolvers
 });
 
-console.log(`🚀 Server ready at ${url}`);
+const { url } = await startStandaloneServer(server, {
+  context:async () => ({/*XCollection*/}),
+  listen: { port: 8080 },
+});
+
+
+console.log(`Server running on: ${url}`);

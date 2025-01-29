@@ -1,6 +1,8 @@
-import { ApolloServer } from "@apollo/server";
+/*import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { MongoClient } from "mongodb";
+import { schema } from "./schema.ts"; // Tu esquema GraphQL
+import { resolvers } from "./resolvers.ts"; // Tus resolutores
 
 // Obtiene la URL de MongoDB desde las variables de entorno
 const MONGO_URL = Deno.env.get("MONGO_URL");
@@ -17,7 +19,7 @@ console.info("Connected to MongoDB");
 // Obtiene la colección de contactos
 const mongoDB = mongoClient.db("contacts_db"); 
 const ContactCollection = mongoDB.collection("contacts"); 
-/*
+
 // Inicializa el servidor Apollo
 const server = new ApolloServer({
   typeDefs: schema, 
@@ -29,6 +31,20 @@ const { url } = await startStandaloneServer(server, {
   context: async () => ({
     ContactCollection, 
   }),
-});*/
+});
 
-//console.info(`Server ready at ${url}`);
+console.info(`Server ready at ${url}`);
+*/
+
+
+//////CODIGO MINIMO PARA HACER EL DEPLOY
+// Importa la función para manejar las respuestas HTTP
+import { serve } from "https://deno.land/std/http/server.ts";
+
+// Define el puerto en el que escuchará el servidor
+const port = 8000;
+
+// Configura el servidor para responder con un mensaje "Hello World"
+serve((req) => new Response("Hello World!", { status: 200 }));
+
+console.log(`Server running on http://localhost:${port}`);

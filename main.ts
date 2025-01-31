@@ -1,8 +1,9 @@
 import {ApolloServer} from "@apollo/server"
 import {startStandaloneServer} from "@apollo/server/standalone";
 import { resolvers } from "./resolvers.ts";
-import {Collection, MongoClient, ObjectId} from "mongodb"
+import { MongoClient} from "mongodb"
 import { schema } from "./schema.ts";
+import { RestaurantModel } from "./types.ts";
 
 const MONGO_URL = Deno.env.get("MONGO_URL");
 
@@ -11,7 +12,6 @@ if (!MONGO_URL) {
 }
 
 const ninjaApiKey = Deno.env.get("apiNinjaKey");
-
 if (!ninjaApiKey) {
   throw new Error("La variable de entorno 'apiNinjaKey' no está configurada");
 }
@@ -20,9 +20,9 @@ if (!ninjaApiKey) {
 const client = new MongoClient (MONGO_URL)
 await client.connect()
 console.log('Conectado a la base de datos');
-const dataBase = client.db('DBName')
+const dataBase = client.db('restaurants')
 
-//export const xCollection = dataBase.collection<>('nameOfCollection')
+export const RestaurantCollection = dataBase.collection<RestaurantModel>('restaurants')
 
 
 const server = new ApolloServer({
@@ -31,7 +31,7 @@ const server = new ApolloServer({
 });
 
 const { url } = await startStandaloneServer(server, {
-  context:async () => ({/*XCollection*/}),
+  context:async () => ({RestaurantCollection}),
   listen: { port: 8080 },
 });
 
